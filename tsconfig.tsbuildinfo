@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/components/ControlPanel.tsx","./src/components/DashboardCharts.tsx","./src/hooks/useSimulation.ts","./src/lib/simulation/Battery.ts","./src/lib/simulation/HCU.ts","./src/lib/simulation/MotorGenerator.ts","./src/lib/simulation/constants.ts","./src/lib/simulation/simulation.test.ts"],"version":"5.7.3"}

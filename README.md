@@ -1,8 +1,10 @@
 # Simulador de Control PID - HCU Toyota Sienna 2026
 
-Motor de simulación discreta en Python (`numpy` y `matplotlib`) que modela el lazo de control cerrado del sistema de mantenimiento de carga (*Charge-Sustaining*) de la batería de alta tensión de un vehículo híbrido (Toyota Sienna 2026).
+Simulador del lazo de control cerrado del sistema de mantenimiento de carga (*Charge-Sustaining*) de la batería de alta tensión de un vehículo híbrido (Toyota Sienna 2026), implementado en dos modalidades independientes:
+1. **Simulador Web Interactivo en Tiempo Real** (React + TypeScript + Vite + Tailwind CSS + Recharts).
+2. **Motor de Simulación Discreta en Python** (`numpy` + `matplotlib` + `pytest`).
 
-## ⚙️ Parámetros del Sistema
+## ⚙️ Parámetros Fijos del Sistema
 
 | Parámetro | Símbolo | Valor | Unidad |
 | :--- | :---: | :---: | :---: |
@@ -14,65 +16,63 @@ Motor de simulación discreta en Python (`numpy` y `matplotlib`) que modela el l
 | Límites del actuador (`I_c`) | `[I_min, I_max]` | `[0.0, 80.0]` | A |
 | Constante de tiempo del actuador | `tau_a` | `0.5` | s |
 
-## 🏗️ Estructura del Proyecto
+---
 
-- [`parametros.py`](./parametros.py): Constantes físicas y parámetros de sintonización PID.
-- [`bateria.py`](./bateria.py): Clase `Bateria` (Planta e integrador por conteo de Coulombios con *clamping* estricto en `[0.0, 6.5] Ah`).
-- [`motor_generador.py`](./motor_generador.py): Clase `MotorGenerador` (Actuador con filtro pasa-bajos discreto de 1er orden y saturación en `[0.0, 80.0] A`).
-- [`hcu.py`](./hcu.py): Clase `HCU` (Controlador PID discreto con mecanismo *Anti-Windup* por *clamping* condicional).
-- [`simulacion.py`](./simulacion.py): Event loop discreto y generador de los 3 escenarios de perturbación (`urbano`, `autopista`, `aceleracion_brusca`).
-- [`graficos.py`](./graficos.py): Generación de dashboards de 3 filas (`SOC`, `Corrientes`, `Error`) con `matplotlib`.
-- [`test_simulacion.py`](./test_simulacion.py): Suite de pruebas automatizadas con `pytest` para validar los criterios de aceptación.
-- [`requirements.txt`](./requirements.txt): Dependencias de Python para instalación con `pip` / `.venv`.
-- [`shell.nix`](./shell.nix): Entorno reproducible para Nix / NixOS.
+## 🌐 1. Simulador Web Interactivo (React + TypeScript + Vite)
 
-## 🚀 Instalación y Ejecución
+### Arquitectura Web (`src/`)
+- [`src/lib/simulation/Battery.ts`](./src/lib/simulation/Battery.ts): Planta integradora por conteo de Coulombios con *clamping* en `[0, 6.5] Ah`.
+- [`src/lib/simulation/MotorGenerator.ts`](./src/lib/simulation/MotorGenerator.ts): Actuador con filtro pasa-bajos de 1er orden (`tau_a = 0.5s`) y saturación en `[0, 80] A`.
+- [`src/lib/simulation/HCU.ts`](./src/lib/simulation/HCU.ts): Controlador PID discreto con mecanismo *Anti-Windup* por *clamping* condicional.
+- [`src/hooks/useSimulation.ts`](./src/hooks/useSimulation.ts): Hook reactivo de simulación en tiempo real (ticks de `100 ms`).
+- [`src/components/ControlPanel.tsx`](./src/components/ControlPanel.tsx): Panel de control industrial con Play/Pause/Reset, selector de velocidad, slider continuo (`-150 A` a `+50 A`) y escenarios predefinidos (*Autopista*, *Aceleración Brusca*, *Frenado Regenerativo*).
+- [`src/components/DashboardCharts.tsx`](./src/components/DashboardCharts.tsx): 3 gráficos sincronizados en tiempo real (`SOC`, `Corrientes`, `Error`) con `Recharts`.
 
-### Opción 1: Usando entorno virtual `.venv` (Linux / macOS / Windows)
-
-1. Crear y activar el entorno virtual (si aún no está creado):
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate  # En Windows: .venv\Scripts\activate
-   ```
-
-2. Instalar las dependencias desde `requirements.txt`:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Ejecutar el simulador, generar los gráficos y correr los tests:
-   ```bash
-   # Ejecutar la simulación en consola para los 3 escenarios
-   python simulacion.py
-
-   # Generar los gráficos (dashboards PNG en ./resultados/)
-   python graficos.py
-
-   # Ejecutar los tests de criterios de aceptación
-   pytest -v
-   ```
-
-### Opción 2: Usando `nix-shell` (NixOS / Nix)
-
-Podés ejecutar los comandos directamente sin activar entornos manualmente:
+### Ejecución del Frontend Web
 
 ```bash
-# Ejecutar la simulación en consola para los 3 escenarios
-nix-shell --run "python simulacion.py"
+# Instalar dependencias
+npm install
 
-# Generar los gráficos (dashboards PNG en ./resultados/)
-nix-shell --run "python graficos.py"
+# Iniciar el servidor de desarrollo interactivo
+npm run dev
 
-# Ejecutar los tests de criterios de aceptación
-nix-shell --run "pytest -v"
+# Ejecutar los tests unitarios de dominio (Vitest)
+npm test
+
+# Compilar para producción
+npm run build
 ```
 
-O bien ingresar al shell interactivo de Nix:
+---
+
+## 🐍 2. Simulador Discreto en Python
+
+### Estructura Python
+- [`parametros.py`](./parametros.py): Constantes físicas y parámetros de sintonización PID.
+- [`bateria.py`](./bateria.py): Clase `Bateria`.
+- [`motor_generador.py`](./motor_generador.py): Clase `MotorGenerador`.
+- [`hcu.py`](./hcu.py): Clase `HCU`.
+- [`simulacion.py`](./simulacion.py): Event loop discreto y generador de los 3 escenarios (`urbano`, `autopista`, `aceleracion_brusca`).
+- [`graficos.py`](./graficos.py): Generación de dashboards estáticos en `./resultados/`.
+- [`test_simulacion.py`](./test_simulacion.py): Suite de pruebas automatizadas con `pytest`.
+
+### Opción A: Usando entorno virtual `.venv` (Linux / macOS / Windows)
 
 ```bash
-nix-shell
+python3 -m venv .venv
+source .venv/bin/activate  # En Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
 python simulacion.py
 python graficos.py
 pytest -v
+```
+
+### Opción B: Usando `nix-shell` (NixOS / Nix)
+
+```bash
+nix-shell --run "python simulacion.py"
+nix-shell --run "python graficos.py"
+nix-shell --run "pytest -v"
 ```
