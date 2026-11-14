@@ -1,0 +1,14 @@
+# Entornos virtuales y caché de Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Nix
+result
+result-*
+
+# Archivos temporales
+.DS_Store
