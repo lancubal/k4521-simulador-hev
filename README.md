@@ -4,7 +4,7 @@ Simulador del lazo de control cerrado del sistema de mantenimiento de carga (*Ch
 1. **Simulador Web Interactivo en Tiempo Real** (React + TypeScript + Vite + Tailwind CSS + Recharts).
 2. **Motor de Simulación Discreta en Python** (`numpy` + `matplotlib` + `pytest`).
 
-## ⚙️ Parámetros Fijos del Sistema
+## Parámetros Fijos del Sistema
 
 | Parámetro | Símbolo | Valor | Unidad |
 | :--- | :---: | :---: | :---: |
@@ -18,7 +18,7 @@ Simulador del lazo de control cerrado del sistema de mantenimiento de carga (*Ch
 
 ---
 
-## 🌐 1. Simulador Web Interactivo (React + TypeScript + Vite)
+## 1. Simulador Web Interactivo (React + TypeScript + Vite)
 
 ### Arquitectura Web (`src/`)
 - [`src/lib/simulation/Battery.ts`](./src/lib/simulation/Battery.ts): Planta integradora por conteo de Coulombios con *clamping* en `[0, 6.5] Ah`.
@@ -46,7 +46,7 @@ npm run build
 
 ---
 
-## 🐍 2. Simulador Discreto en Python
+## 2. Simulador Discreto en Python
 
 ### Estructura Python
 - [`parametros.py`](./parametros.py): Constantes físicas y parámetros de sintonización PID.
